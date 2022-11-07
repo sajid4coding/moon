@@ -4,7 +4,6 @@ use App\Http\Controllers\{SslCommerzPaymentController, CouponController, Attribu
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
-use Auth;
 
 /*
 |--------------------------------------------------------------------------
