@@ -5,14 +5,15 @@ namespace App\Http\Controllers;
 use App\Mail\ContactMessage;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use App\Models\{Team, Product, Cart, Color, Inventory, Invoice, Invoice_Detail};
+use App\Models\{Team, Product, Cart, Color, Inventory, Invoice, Invoice_Detail, orders};
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
-use Khsing\World\World;
 use App\Library\SslCommerz\SslCommerzNotification;
 use DB;
+use Khsing\World\World;
 use Khsing\World\Models\Continent;
 use Khsing\World\Models\Country;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class FrontendController extends Controller
 {
@@ -51,7 +52,19 @@ class FrontendController extends Controller
 
     public function account()
     {
-        return view('frontend.account');
+        return view('frontend.account', [
+            'invoices' => Invoice::where('user_id', auth()->id())->get(),
+            'unpaid_order' => Invoice::where('user_id', auth()->id())->where('payment', 'Unpaid')->count(),
+            'unpaid_order_total_price' => Invoice::where('user_id', auth()->id())->where('payment', 'Unpaid')->sum('total_price'),
+            'paid_order' => Invoice::where('user_id', auth()->id())->where('payment', 'Paid')->count(),
+            'paid_order_total_price' => Invoice::where('user_id', auth()->id())->where('payment', 'Paid')->sum('total_price'),
+        ]);
+    }
+    public function invoice($id)
+    {
+        $invoice = Invoice::find($id);
+        $pdf = Pdf::loadView('pdf.invoice',compact('invoice'))->setPaper('a4', 'landscape');
+        return $pdf->stream('invoice.pdf');
     }
 
     function team(){
@@ -136,6 +149,7 @@ class FrontendController extends Controller
     }
 
     public function get_city(Request $request){
+        // return $request;
         $cities = World::getByCode($request->country_code);
         $countries_cities = $cities->children();
         $sort_name = collect($countries_cities);
@@ -227,6 +241,7 @@ class FrontendController extends Controller
         }
 
         if($request->payment_method == "COD"){
+            Cart::where('user_id', auth()->id())->delete();
             return redirect('cart');
         }else{
             return redirect('pay')->with('invoice_id', $invoice_id);

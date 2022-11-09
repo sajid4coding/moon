@@ -24,6 +24,7 @@ route::get('shop', [FrontendController::class,  'shop'])->name('shop');
 route::get('contact', [FrontendController::class, 'contact'])->name('contact');
 route::post('contact', [FrontendController::class, 'contact_message'])->name('contact.message');
 route::get('account', [FrontendController::class, 'account'])->name('account')->middleware(['auth', 'verified']);
+route::get('invoice/{id}', [FrontendController::class, 'invoice'])->name('invoice');
 route::get('single_page/{id}', [FrontendController::class, 'single_page'])->name('single.page');
 route::get('cart', [FrontendController::class, 'cart'])->name('cart');
 route::get('cart_delete/{id}', [FrontendController::class, 'cart_row_delete'])->name('cart.row.delete');
