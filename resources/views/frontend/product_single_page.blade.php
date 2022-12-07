@@ -76,7 +76,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="col-lg-6">
                             <div class="product_details_content">
                                 <h2 class="item_title">{{ $single_product->name }}</h2>
@@ -103,13 +102,10 @@
                                     </span>
                                 </div>
                                 <hr>
-
                                 <div class="item_attribute">
                                     @livewire('selectinventories.selectinventories',['product_id' => $single_product->id])
                                 </div>
-
-
-                                </div>
+                            </div>
                             </form>
                         </div>
                     </div>
@@ -291,5 +287,20 @@
         </main>
         <!-- main body - end
         ================================================== -->
+@endsection
+
+@section ('footer_script')
+    <script>
+        $('document').ready(function(){
+            $("#not_logged_in").click(function(){
+                Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'You Need To Login',
+                footer: '<a href="{{ route('customer_register') }}">Login or Registation From Here</a>'
+                })
+            })
+        })
+    </script>
 @endsection
 

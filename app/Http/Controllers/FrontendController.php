@@ -14,6 +14,7 @@ use Khsing\World\World;
 use Khsing\World\Models\Continent;
 use Khsing\World\Models\Country;
 use Barryvdh\DomPDF\Facade\Pdf;
+use phpDocumentor\Reflection\PseudoTypes\True_;
 
 class FrontendController extends Controller
 {
@@ -122,10 +123,43 @@ class FrontendController extends Controller
 
     //product single page
     public function single_page($id){
+        // $inventory = Inventory::select(['size_id','color_id'])->where('product_id',$id)->groupBy(['size_id','color_id'])->first();
+        // if($inventory){
+        //     $card_button_visibility = True;
+        // }else{
+        //     $card_button_visibility = False;
+        // }
         $single_product = Product::findOrFail($id);
         $category_id = $single_product->category_id;
         $products = product::where('category_id', $single_product->category_id)->where('id','!=',$id)->limit(4)->get();
-        return view('frontend.product_single_page',compact('single_product','products','category_id'));
+        return view('frontend.product_single_page', compact('single_product','products','category_id'));
+    }
+
+    //without inventory product
+    public function without_inventory_product($id){
+        $inventory = Inventory::find($id);
+        $product = Product::where('id', $id)->first();
+        if(
+            Cart::where([
+                'user_id' => auth()->id(),
+                'vendor_id' => $inventory->vendor_id,
+                'product_id' => $product->id
+            ])->exists()
+        ){
+            Cart::where([
+                'user_id' => auth()->id(),
+                'vendor_id' => $inventory->vendor_id,
+                'product_id' => $product->id
+            ])->increment('quantity', $inventory->quantity);
+        }else{
+            Cart::insert([
+                'user_id' => auth()->id(),
+                'vendor_id' => $inventory->vendor_id,
+                'product_id' => $product->id,
+                'created_at' => Carbon::now()
+            ]);
+        }
+        return redirect('cart');
     }
 
 
@@ -245,7 +279,6 @@ class FrontendController extends Controller
             return redirect('cart');
         }else{
             return redirect('pay')->with('invoice_id', $invoice_id);
-
         }
 
         Cart::where('user_id', auth()->id())->delete();

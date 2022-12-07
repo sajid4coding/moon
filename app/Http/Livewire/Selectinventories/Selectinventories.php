@@ -18,38 +18,49 @@ class Selectinventories extends Component
     public $unit_price = 0;
     public $count = 1;
     public $card_button_visibility = 'd-none';
-    public $size_button_visibility = 'd-none';
+    public $size_button_visibility = TRUE;
     public $inventory;
+    public $available_inventory;
 
 
     public function addtocartbtn(){
-
-        if(
-            Cart::where([
-                'user_id' => auth()->id(),
-                'vendor_id' => $this->inventory->vendor_id,
-                'product_id' => $this->product_id,
-                'size_id' => $this->inventory->size_id,
-                'color_id' => $this->inventory->color_id
-            ])->exists()
-        ){
-            Cart::where([
-                'user_id' => auth()->id(),
-                'vendor_id' => $this->inventory->vendor_id,
-                'product_id' => $this->product_id,
-                'size_id' => $this->inventory->size_id,
-                'color_id' => $this->inventory->color_id
-            ])->increment('quantity', $this->count);
+        if($this->available_inventory = Inventory::where('product_id', $this->product_id)->exists()){
+            if(
+                Cart::where([
+                    'user_id' => auth()->id(),
+                    'vendor_id' => $this->inventory->vendor_id,
+                    'product_id' => $this->product_id,
+                    'size_id' => $this->inventory->size_id,
+                    'color_id' => $this->inventory->color_id
+                ])->exists()
+            ){
+                Cart::where([
+                    'user_id' => auth()->id(),
+                    'vendor_id' => $this->inventory->vendor_id,
+                    'product_id' => $this->product_id,
+                    'size_id' => $this->inventory->size_id,
+                    'color_id' => $this->inventory->color_id
+                ])->increment('quantity', $this->count);
+            }else{
+                Cart::insert([
+                    'user_id' => auth()->id(),
+                    'vendor_id' => $this->inventory->vendor_id,
+                    'product_id' => $this->product_id,
+                    'size_id' => $this->inventory->size_id,
+                    'color_id' => $this->inventory->color_id,
+                    'quantity' => $this->count,
+                    'created_at' => Carbon::now()
+                ]);
+            }
         }else{
             Cart::insert([
                 'user_id' => auth()->id(),
                 'vendor_id' => $this->inventory->vendor_id,
                 'product_id' => $this->product_id,
-                'size_id' => $this->inventory->size_id,
-                'color_id' => $this->inventory->color_id,
                 'quantity' => $this->count,
                 'created_at' => Carbon::now()
             ]);
+            $this->card_button_visibility = '';
         }
 
         $this->card_button_visibility = 'd-none';
@@ -99,6 +110,10 @@ class Selectinventories extends Component
 
     public function render()
     {
+        if(!$this->available_inventory = Inventory::where('product_id', $this->product_id)->exists()){
+            $this->card_button_visibility = '';
+            $this->size_button_visibility = FALSE;
+        }
         return view('livewire.selectinventories.selectinventories' ,[
             'selectinventories' => Inventory::select('size_id')->where('product_id', $this->product_id)->groupBy('size_id')->get(),
         ]);

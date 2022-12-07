@@ -7,27 +7,62 @@
 <div class="sidebar-menu-wrapper">
     <div class="cart_sidebar">
         <button type="button" class="close_btn"><i class="fal fa-times"></i></button>
-        <ul class="cart_items_list ul_li_block mb_30 clearfix">
-            @forelse ($carts as $cart)
+        @if (session('subtotal'))
+            <ul class="cart_items_list ul_li_block mb_30 clearfix">
+                @forelse ($carts as $cart)
+                    <li>
+                        <div class="item_image">
+                            <img src="{{ asset('uploads/product_thumbnail/') }}/{{ $cart->relationshipwithproduct->thumbnail }}" alt="image_not_found">
+                        </div>
+                        <div class="item_content">
+                            <h4 class="item_title">{{ $cart->relationshipwithproduct->name }}</h4>
+                            {{-- <span class="item_price">$30.00</span> --}}
+                            <span class="price">
+                                @if ($cart->relationshipwithproduct->discount_price)
+                                    <span>${{ $cart->relationshipwithproduct->discount_price }}</span>
+                                    <del>${{ $cart->relationshipwithproduct->regular_price }}</del>
+                                @else
+                                    <span>${{ $cart->relationshipwithproduct->regular_price }}</span>
+                                @endif
+                            </span>
+                        </div>
+                        <a href="{{ route('cart.row.delete',$cart->id) }}" class="remove_btn"><i class="fal fa-trash-alt"></i></a>
+                    </li>
+                @empty
+                    <div class="d-flex justify-content-center">
+                        <div class="row m-5 text-center">
+                            <div class="col-12">
+                                <p class="fw-bold">No products in the cart.</p>
+                            </div>
+                            <div class="col-12">
+                                <a class="btn btn_primary" href="{{ route('shop') }}">Return To Shop</a>
+                            </div>
+                        </div>
+                    </div>
+                @endforelse
+            </ul>
+            <ul class="total_price ul_li_block mb_30 clearfix">
                 <li>
-                    <div class="item_image">
-                        <img src="{{ asset('uploads/product_thumbnail/') }}/{{ $cart->relationshipwithproduct->thumbnail }}" alt="image_not_found">
-                    </div>
-                    <div class="item_content">
-                        <h4 class="item_title">{{ $cart->relationshipwithproduct->name }}</h4>
-                        {{-- <span class="item_price">$30.00</span> --}}
-                        <span class="price">
-                            @if ($cart->relationshipwithproduct->discount_price)
-                                <span>${{ $cart->relationshipwithproduct->discount_price }}</span>
-                                <del>${{ $cart->relationshipwithproduct->regular_price }}</del>
-                            @else
-                                <span>${{ $cart->relationshipwithproduct->regular_price }}</span>
-                            @endif
-                        </span>
-                    </div>
-                    <a href="{{ route('cart.row.delete',$cart->id) }}" class="remove_btn"><i class="fal fa-trash-alt"></i></a>
+                    <span>Subtotal:</span>
+                    <span>
+                        {{-- $ {{ session('subtotal') }} --}}
+                        $ {{ session('subtotal') }}
+                    </span>
                 </li>
-            @empty
+                <li>
+                    <span>Delivery Charge (+):</span>
+                    <span>$ {{ session('shipping_charge') ?? 0 }} </span>
+                </li>
+                <li>
+                    <span>Total:</span>
+                    <span class="total_price">$ {{ round(session('subtotal')) + session('shipping_charge') }}</span>
+                </li>
+            </ul>
+            <ul class="btns_group ul_li_block clearfix">
+                <li><a class="btn btn_primary" href="{{ route('cart') }}">View Cart</a></li>
+                <li><a class="btn btn_secondary" href="checkout.html">Checkout</a></li>
+            </ul>
+        @else
             <div class="d-flex justify-content-center">
                 <div class="row m-5 text-center">
                     <div class="col-12">
@@ -38,30 +73,7 @@
                     </div>
                 </div>
             </div>
-            @endforelse
-        </ul>
-        <ul class="total_price ul_li_block mb_30 clearfix">
-            <li>
-                <span>Subtotal:</span>
-                <span>
-                    {{-- $ {{ session('subtotal') }} --}}
-                    $ {{ session('subtotal') }}
-                </span>
-            </li>
-            <li>
-                <span>Delivery Charge (+):</span>
-                <span>$ {{ session('shipping_charge') ?? 0 }} </span>
-            </li>
-            <li>
-                <span>Total:</span>
-                <span class="total_price">$ {{ round(session('subtotal')) + session('shipping_charge') }}</span>
-            </li>
-        </ul>
-        <ul class="btns_group ul_li_block clearfix">
-            <li><a class="btn btn_primary" href="{{ route('cart') }}">View Cart</a></li>
-            <li><a class="btn btn_secondary" href="checkout.html">Checkout</a></li>
-        </ul>
-
+        @endif
     </div>
 
     <div class="cart_overlay"></div>

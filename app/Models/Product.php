@@ -11,7 +11,7 @@ class Product extends Model
     use HasFactory, SoftDeletes;
     protected $fillable = ['thumbnail'];
 
-    function relationwithcategory(){
+    public function relationwithcategory(){
         return $this->hasOne(Category::class, 'id', 'category_id');
     }
 }

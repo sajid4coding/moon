@@ -38,12 +38,13 @@ class Cartshow extends Component
 
     public function quantity_input($id, $quantity){
         // $quantity = 1;
-        Cart::find($id)->update([
-            'quantity' => $quantity
-        ]);
+        if($quantity){
+            Cart::find($id)->update([
+                'quantity' => $quantity
+            ]);
+        }
     }
     public function apply_coupon($subtotal, $vendor_id){
-        // $this->test = $this->coupon;
         if($this->coupon){
             $get_coupon_info = Coupon::where('coupon_name', $this->coupon)->first();
             if(Coupon::where('coupon_name', $this->coupon)->exists()){

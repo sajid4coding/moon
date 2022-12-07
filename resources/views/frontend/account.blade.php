@@ -34,14 +34,16 @@
                             <div class="tab-content bg-light p-3" id="v-pills-tabContent">
                                 <div class="tab-pane fade show active text-center" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
                                     <h5>Welcome to Account</h5>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <canvas id="myChart" width="150" height="150"></canvas>
+                                    @if ($unpaid_order || $paid_order)
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <canvas id="myChart" width="150" height="150"></canvas>
+                                            </div>
+                                            <div class="col-6">
+                                                <canvas id="myChart1" width="150" height="150"></canvas>
+                                            </div>
                                         </div>
-                                        <div class="col-6">
-                                            <canvas id="myChart1" width="150" height="150"></canvas>
-                                        </div>
-                                    </div>
+                                    @endif
                                 </div>
                                 <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
                                     <h5 class="text-center pb-3">Account Details</h5>
@@ -75,8 +77,8 @@
                                             <th>Payment Method</th>
                                             <th>Payment Status</th>
                                             <th>Action</th>
-                                        </tr>@foreach ($invoices as $invoice)
-
+                                        </tr>
+                                        @forelse ($invoices as $invoice)
                                             <tr>
                                                 <td>#{{ $invoice->id }}</td>
                                                 <td>{{ $invoice->billing_address }}</td>
@@ -89,7 +91,13 @@
                                                     <a href="{{ route('invoice', $invoice->id) }}" class="btn btn-primary">Invoice</a>
                                                 </td>
                                             </tr>
-                                        @endforeach
+                                        @empty
+                                            <tr>
+                                                <td colspan=50>
+                                                    <div class="text-center text-danger">No Product Ordered Yet</div>
+                                                </td>
+                                            </tr>
+                                        @endforelse
                                     </table>
                                 </div>
                             </div>

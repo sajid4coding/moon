@@ -84,7 +84,6 @@
                                         @php
                                             $subtotal += cart_total($cart->product_id, $cart->quantity);
                                         @endphp
-
                                     </span>
                                 </td>
                                 <td class="text-center"><button wire:click="cart_row_delete({{ $cart->id }})" class="remove_btn"><i class="fal fa-trash-alt"></i></button></td>

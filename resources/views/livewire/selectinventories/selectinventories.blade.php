@@ -1,16 +1,18 @@
 <div>
     <div class="row">
-        <div class="col col-md-6">
-            <div class="select_option clearfix" wire:model="size_button_visibility">
-                <h4 class="input_title">Size *</h4>
-                <select class="form-select" wire:model="selectsize">
-                    <option data-display="- Please select -">Choose A Size</option>
-                    @foreach ($selectinventories as $selectinventory)
-                        <option value="{{ $selectinventory->relationwithsize->id }}">{{ $selectinventory->relationwithsize->size }}</option>
-                    @endforeach
-                </select>
+        @if ($size_button_visibility == TRUE)
+            <div class="col col-md-6">
+                <div class="select_option clearfix" wire:model="size_button_visibility">
+                    <h4 class="input_title">Size *</h4>
+                    <select class="form-select" wire:model="selectsize">
+                        <option data-display="- Please select -">Choose A Size</option>
+                        @foreach ($selectinventories as $selectinventory)
+                            <option value="{{ $selectinventory->relationwithsize->id }}">{{ $selectinventory->relationwithsize->size }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-        </div>
+        @endif
         @if ($colors)
             <div class="col col-md-6">
                 <div class="select_option clearfix">
